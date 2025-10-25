@@ -1,0 +1,180 @@
+.single-event,
+.archive-events {
+  max-width: 1400px;
+  margin: 0 auto;
+
+  padding: 20px;
+}
+
+.event-meta {
+  margin-bottom: 15px;
+}
+
+.event-thumbnail img {
+  border-radius: 10px;
+  width: 100%;
+  height: auto;
+}
+
+/* archive title */
+
+.archive-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* === Categories List Styling === */
+.scrolled-box {
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 20px;
+  scrollbar-color: var(--scrollbar-color, #009dd9) #adadad;
+  scrollbar-width: thin;
+}
+
+.scrolled-box::-webkit-scrollbar {
+  height: 8px;
+}
+.scrolled-box::-webkit-scrollbar-track {
+  background: #adadad;
+}
+.scrolled-box::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-color, #009dd9);
+}
+.scrolled-box::-webkit-scrollbar-thumb:hover {
+  background: #ed4c4a;
+}
+
+.categories_list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px 10px;
+  position: relative;
+  margin-block-start: 20px;
+  margin-block-end: 20px;
+}
+
+.categories_list .categories_list__item {
+  color: #009dd9;
+  padding: 5px 20px;
+  border: 2px solid #009dd9;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: 300ms;
+  flex-shrink: 0;
+  order: 2;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.categories_list .categories_list__item:hover {
+  color: #fff;
+  background-color: #009dd9;
+}
+
+.categories_list .categories_list__item--active {
+  color: #fff;
+  background-color: #009dd9;
+  /* order: 1; */
+}
+
+@media screen and (max-width: 1280px) {
+  .categories_list {
+    gap: 15px;
+  }
+  .categories_list .categories_list__item {
+    padding: 5px 3vw;
+  }
+}
+@media screen and (max-width: 768px) {
+  .categories_list {
+    margin-block-start: 10px;
+    margin-block-end: 10px;
+    padding-block-end: 10px;
+    font-weight: 600;
+    width: auto;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    font-size: 0.875em;
+    line-height: 1.3em;
+  }
+  .categories_list .categories_list__item {
+    padding: 5px;
+  }
+}
+
+/* Category related css ends */
+/* === All Events Title Styling === */
+h2.all-events-title {
+  font-weight: 600;
+  line-height: 1.1;
+  margin-top: 0;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: baseline;
+  position: relative;
+  color: var(--title-border, #d1232a);
+  font-size: 2rem; /* default size */
+}
+
+/* Small modifier */
+h2.all-events-title.all-events-title--small {
+  font-size: 1.75rem;
+}
+
+/* No top margin */
+h2.all-events-title.all-events-title--no-mt {
+  margin-top: 0;
+}
+
+/* Border effect */
+h2.all-events-title.all-events-title--border::after {
+  content: "";
+  height: 4px;
+  flex-grow: 1;
+  background: #d1232a;
+  display: block;
+}
+
+/* Responsive tweaks */
+@media screen and (max-width: 1000px) {
+  h2.all-events-title {
+    margin-bottom: 5px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  h2.all-events-title {
+    font-size: 2em;
+  }
+  h2.all-events-title.all-events-title--small {
+    font-size: 1.5em;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  h2.all-events-title.all-events-title--border::before {
+    content: "";
+    position: absolute;
+    background: #d1232a;
+    height: 1em;
+    width: 5vw;
+    top: 0;
+    left: -6vw;
+  }
+}
+
+/* === H2 Title Styling  Ends === */
+
+.fc-daygrid-day {
+  transition: background-color 0.3s, background-image 0.3s;
+}
+.fc-daygrid-day-number {
+  position: relative;
+  z-index: 2;
+}

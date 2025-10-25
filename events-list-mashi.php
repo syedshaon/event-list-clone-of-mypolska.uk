@@ -137,6 +137,10 @@ function elm_events_shortcode_admin_notice() {
 add_action('admin_notices', 'elm_events_shortcode_admin_notice');
 
 
+
+
+
+
 /**
  * Fallback templates for single and archive Events
  */
@@ -161,145 +165,94 @@ add_filter('template_include', 'elm_events_fallback_templates');
 
 
 
+
+
+
+// Include shortcode file
+require_once plugin_dir_path(__FILE__) . 'includes/shortcode-events-list.php';
+
+
+
 /**
- * Render events list (archive or shortcode)
+ * Force plugin templates for Events single and archive
  */
-function elm_render_events_list($atts = array()) {
-    // Start output buffering
-    ob_start();
 
-    // Default attributes
-    $atts = shortcode_atts(array(
-        'month'          => date('m'),    // current month by default
-        'year'           => date('Y'),    // current year by default
-        'posts_per_page' => -1,
-    ), $atts, 'events_list');
 
-    // Query events
-    $args = array(
-        'post_type'      => 'events',
-        'posts_per_page' => intval($atts['posts_per_page']),
-        'meta_key'       => '_elm_event_date',
-        'orderby'        => 'meta_value',
-        'order'          => 'ASC',
-        'meta_query'     => array(
-            array(
-                'key'     => '_elm_event_date',
-                'value'   => array(
-                    $atts['year'] . '-' . $atts['month'] . '-01',
-                    $atts['year'] . '-' . $atts['month'] . '-31'
-                ),
-                'compare' => 'BETWEEN',
-                'type'    => 'DATE',
-            ),
-        ),
+function elm_events_force_plugin_templates($template) {
+    if (is_singular('events')) {
+        return plugin_dir_path(__FILE__) . 'templates/single-events.php';
+    }
+
+    if (is_post_type_archive('events')) {
+        return plugin_dir_path(__FILE__) . 'templates/archive-events.php';
+    }
+
+    return $template;
+}
+add_filter('template_include', 'elm_events_force_plugin_templates', 99);
+
+
+// Load plugin CSS only for Events
+ function elm_enqueue_event_scripts() {
+
+    // Enqueue FullCalendar and Moment
+    wp_enqueue_script('moment-js', plugin_dir_url(__FILE__) . 'assets/js/moment.js', ['jquery'], null, true);
+    wp_enqueue_script('fullcalendar-js', plugin_dir_url(__FILE__) . 'assets/js/fullcalendar.js', ['jquery'], null, true);
+    wp_enqueue_style('fullcalendar-css', plugin_dir_url(__FILE__) . 'assets/css/fullcalendar.css');
+
+    // Enqueue main custom script (this is where filtering + calendar logic will live)
+    wp_enqueue_script(
+        'events-list-mashi-frontend-js',
+        plugin_dir_url(__FILE__) . 'assets/js/events.js',
+        ['jquery', 'moment-js', 'fullcalendar-js'],
+        filemtime(plugin_dir_path(__FILE__) . 'assets/js/events.js'),
+        true
     );
 
-    $query = new WP_Query($args);
-    ?>
+    // Enqueue plugin CSS
+    wp_enqueue_style(
+        'elm-events-style',
+        plugin_dir_url(__FILE__) . 'assets/css/events.css',
+        [],
+        filemtime(plugin_dir_path(__FILE__) . 'assets/css/events.css')
+    );
 
-    <div class="grid__cell-1-9 grid__cell-l-1-12">
-        <div class="page-columns">
-            <div class="page-columns__left">
-                <nav aria-label="breadcrumbs" class="rank-math-breadcrumb">
-                    <p>
-                        <a href="<?php echo esc_url(home_url('/')); ?>">Home</a>
-                        <span class="separator">/</span>
-                        <span class="last">Events</span>
-                    </p>
-                </nav>
-                <h1 class="title title--uppercase title--no-mt">Parties and Events</h1>
-            </div>
-        </div>
+    // Fetch events for frontend JS
+    $events = [];
+    $query = new WP_Query([
+        'post_type'      => 'events',
+        'posts_per_page' => -1,
+    ]);
 
-        <div class="categories_list scrolled-box">
-            <a href="<?php echo esc_url(get_post_type_archive_link('events')); ?>" class="categories_list__item categories_list__item--active categories_list__item--all scrolled-box__element">
-                All events
-            </a>
-            <?php 
-            $terms = get_terms(array('taxonomy' => 'category', 'hide_empty' => true));
-            if (!empty($terms) && !is_wp_error($terms)) :
-                foreach ($terms as $term) : ?>
-                    <a class="categories_list__item scrolled-box__element" href="<?php echo esc_url(get_term_link($term)); ?>">
-                        <?php echo esc_html($term->name); ?>
-                    </a>
-                <?php endforeach;
-            endif; ?>
-        </div>
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $cats = wp_get_post_terms(get_the_ID(), 'category', ['fields' => 'slugs']);
+            $events[] = [
+                'id'        => get_the_ID(),
+                'title'     => get_the_title(),
+                'date'      => get_post_meta(get_the_ID(), '_elm_event_date', true),
+                'time'      => get_post_meta(get_the_ID(), '_elm_event_time', true),
+                'location'  => get_post_meta(get_the_ID(), '_elm_event_location', true),
+                'excerpt'   => get_the_excerpt(),
+                'categories'=> $cats,
+                'link'      => get_permalink(),
+            ];
+        }
+    }
+    wp_reset_postdata();
 
-        <div class="grid js-event-day-filter">
-            <div class="grid__cell-1-4 grid__cell-m-1-4 grid__cell-s-1-5">
-                <div class="calendar" data-element="calendar">
-                    <div class="calendar__header">
-                        <div class="calendar__nav">
-                            <a href="#" class="calendar__nav-prev">&lt;</a>
-                            <div class="calendar__nav-current"><?php echo date('F Y'); ?></div>
-                            <a href="#" class="calendar__nav-next">&gt;</a>
-                        </div>
-                        <div class="calendar__day-names">
-                            <div class="calendar__day-name">PN</div>
-                            <div class="calendar__day-name">WT</div>
-                            <div class="calendar__day-name">WED</div>
-                            <div class="calendar__day-name">CZ</div>
-                            <div class="calendar__day-name">PT</div>
-                            <div class="calendar__day-name">SO</div>
-                            <div class="calendar__day-name">N</div>
-                        </div>
-                    </div>
-                    <div class="calendar__days">
-                        <!-- JS will populate calendar days here -->
-                    </div>
-                    <a href="#" class="calendar__button">See all</a>
-                </div>
-            </div>
-
-            <div class="grid__cell-5-12 grid__cell-m-5-12 grid__cell-s-6-12 events">
-                <h2 class="title title--small title--border title--no-mt">List of events</h2>
-                <div class="horizontal-box-list" data-element="list">
-                    <?php if ($query->have_posts()) :
-                        while ($query->have_posts()) : $query->the_post(); ?>
-                            <div class="horizontal-box-list__item notice-box notice-box--small js-modal" data-day="1">
-                                <div class="notice-box__header">
-                                    <div class="notice-category">
-                                        <?php
-                                        $cats = get_the_terms(get_the_ID(), 'category');
-                                        if ($cats && !is_wp_error($cats)) :
-                                            foreach ($cats as $cat) : ?>
-                                                <div class="notice-category__name"><?php echo esc_html($cat->name); ?></div>
-                                            <?php endforeach;
-                                        endif; ?>
-                                    </div>
-                                    <a href="<?php the_permalink(); ?>">
-                                        <h2 class="title title--medium notice-box__title"><?php the_title(); ?></h2>
-                                    </a>
-                                </div>
-                                <div class="notice-box__image-wrapper">
-                                    <?php if (has_post_thumbnail()) the_post_thumbnail('medium', array('class'=>'notice-box__img')); ?>
-                                </div>
-                                <div class="notice-box__content">
-                                    <div class="notice-box__columns">
-                                        <div class="notice-box__column-full"><?php the_excerpt(); ?></div>
-                                    </div>
-                                    <a href="<?php the_permalink(); ?>" class="notice-box__link">Details</a>
-                                </div>
-                            </div>
-                        <?php endwhile;
-                    else : ?>
-                        <p>No events found.</p>
-                    <?php endif; ?>
-                </div>
-
-                <div class="pagination-wrapper pagination-wrapper--months">
-                    <?php previous_posts_link('&lt; Previous Month'); ?>
-                    <?php next_posts_link('Next Month &gt;'); ?>
-                </div>
-            </div>
-        </div>
-    </div>
-    <?php wp_reset_postdata();
-
-    return ob_get_clean();
+    // Localize events data
+    wp_localize_script('events-list-mashi-frontend-js', 'elmEventsData', [
+        'events' => $events,
+    ]);
 }
+add_action('wp_enqueue_scripts', 'elm_enqueue_event_scripts');
 
 
-add_shortcode('events_list', 'elm_render_events_list');
+
+add_action('wp_enqueue_scripts', 'elm_enqueue_event_scripts');
+
+
+
+ 
