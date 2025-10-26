@@ -106,6 +106,10 @@
   }
 }
 
+.elm_events-container {
+  width: 100%;
+}
+
 /* Category related css ends */
 /* === All Events Title Styling === */
 h2.all-events-title {
@@ -118,7 +122,7 @@ h2.all-events-title {
   gap: 5px;
   align-items: baseline;
   position: relative;
-  color: var(--title-border, #d1232a);
+  color: #d1232a;
   font-size: 2rem; /* default size */
 }
 
@@ -179,10 +183,25 @@ h2.all-events-title.all-events-title--border::after {
   z-index: 2;
 }
 
+/* style for event and calendar container */
+.elm-events-list__container {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  justify-content: start;
+}
+@media screen and (max-width: 900px) {
+  .elm-events-list__container {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
 /* Calendar styling */
 
 /* Plugin calendar styles (scoped) */
-.events-list-mashi .calendar {
+.elm-events-list__container .calendar {
+  max-width: 40%;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -194,49 +213,48 @@ h2.all-events-title.all-events-title--border::after {
 }
 
 /* header */
-.events-list-mashi .calendar__header {
+.elm-events-list__container .calendar__header {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.events-list-mashi .calendar__nav {
+.elm-events-list__container .calendar__nav {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 8px;
 }
-.events-list-mashi .calendar__nav-prev,
-.events-list-mashi .calendar__nav-next {
+.elm-events-list__container .calendar__nav-prev,
+.elm-events-list__container .calendar__nav-next {
   color: #009dd9;
   font-size: 1.75em;
   font-family: "franklin-gothic-urw-comp", sans-serif;
   font-weight: 600;
   text-decoration: none;
 }
-.events-list-mashi .calendar__nav-prev:hover,
-.events-list-mashi .calendar__nav-next:hover {
+.elm-events-list__container .calendar__nav-prev:hover,
+.elm-events-list__container .calendar__nav-next:hover {
   color: #d1232a;
 }
 
-.events-list-mashi .calendar__nav-current {
+.elm-events-list__container .calendar__nav-current {
   color: #009dd9;
-  font-family: "franklin-gothic-urw-comp", sans-serif;
   font-weight: 600;
-  font-size: 1.75em;
-  line-height: 1em;
+  font-size: 1.5rem;
+  line-height: 1rem;
   text-transform: uppercase;
   flex-grow: 1;
   text-align: center;
 }
 
 /* day names */
-.events-list-mashi .calendar__day-names {
+.elm-events-list__container .calendar__day-names {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
-.events-list-mashi .calendar__day-name {
+.elm-events-list__container .calendar__day-name {
   padding: 2px 0;
   font-size: 0.625em;
   line-height: 1.5em;
@@ -250,12 +268,12 @@ h2.all-events-title.all-events-title--border::after {
 }
 
 /* days grid */
-.events-list-mashi .calendar__days {
+.elm-events-list__container .calendar__days {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
-.events-list-mashi .calendar__day {
+.elm-events-list__container .calendar__day {
   --day-background: var(--body-background, #f7f7f7);
   font-weight: 500;
   padding: 7px 0;
@@ -269,25 +287,25 @@ h2.all-events-title.all-events-title--border::after {
   box-sizing: border-box;
   border: 1px solid transparent;
 }
-.events-list-mashi .calendar__day[data-day] {
+.elm-events-list__container .calendar__day[data-day] {
   cursor: pointer;
 }
 
 /* day background override when plugin sets --day-background inline */
-.events-list-mashi .calendar__day[style*="--day-background"] {
+.elm-events-list__container .calendar__day[style*="--day-background"] {
   background: none !important; /* reset background to let CSS var be used */
   background-color: var(--day-background) !important;
   color: #fff;
 }
 
 /* disabled prev */
-.events-list-mashi .calendar__nav-prev.disabled {
+.elm-events-list__container .calendar__nav-prev.disabled {
   opacity: 0.5;
   pointer-events: none;
 }
 
 /* see all button */
-.events-list-mashi .calendar__button {
+.elm-events-list__container .calendar__button {
   color: #009dd9;
   padding: 5px 20px;
   border: #009dd9 2px solid;
@@ -301,26 +319,26 @@ h2.all-events-title.all-events-title--border::after {
   width: fit-content;
   background: transparent;
 }
-.events-list-mashi .calendar__button:hover {
+.elm-events-list__container .calendar__button:hover {
   color: #fff !important;
   background-color: #009dd9;
 }
 
 /* event list items */
-.events-list-mashi .event-item {
+.elm-events-list__container .event-item {
   border: 1px solid #eee;
   padding: 10px;
   border-radius: 6px;
   margin-bottom: 12px;
   background: #fff;
 }
-.events-list-mashi .event-item__header {
+.elm-events-list__container .event-item__header {
   display: flex;
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 6px;
 }
-.events-list-mashi .event-item__cat {
+.elm-events-list__container .event-item__cat {
   padding: 3px 8px;
   border-radius: 6px;
   color: #fff;
@@ -329,8 +347,8 @@ h2.all-events-title.all-events-title--border::after {
 
 /* responsive */
 @media screen and (max-width: 768px) {
-  .events-list-mashi .calendar__day,
-  .events-list-mashi .calendar__day-name {
+  .elm-events-list__container .calendar__day,
+  .elm-events-list__container .calendar__day-name {
     width: calc(14.2857% - 6px);
   }
 }
@@ -436,9 +454,7 @@ h2.all-events-title.all-events-title--border::after {
   .elm_event_card {
     grid-template-columns: 30% 20% 50%;
   }
-  .elm_event_card__title {
-    font-size: 1.3em;
-  }
+
   .elm_event_card__image_wrapper img {
     max-width: 220px;
     max-height: 150px;
@@ -451,15 +467,15 @@ h2.all-events-title.all-events-title--border::after {
   }
   .elm_event_card__image_wrapper {
     width: 100%;
-    padding: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   .elm_event_card__image_wrapper img {
     max-width: 100%;
-    max-height: unset;
+    max-height: 200px;
     object-fit: cover;
-  }
-  .elm_event_card__title {
-    font-size: 1.2em;
   }
 }
 
@@ -531,6 +547,13 @@ h2.all-events-title.all-events-title--border::after {
   text-transform: uppercase;
   margin-bottom: 5px;
   font-size: 0.875em;
+}
+
+.elm_date-location {
+  margin: 5px 0;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #1e73be;
 }
 
 .elm_modal__close {

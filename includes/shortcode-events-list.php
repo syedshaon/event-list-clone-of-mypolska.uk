@@ -48,12 +48,12 @@ function elm_render_events_list($atts = array()) {
             <div class="page-columns__left">
                 <nav aria-label="breadcrumbs" class="rank-math-breadcrumb">
                     <small>
-                        <a href="<?php echo esc_url(home_url('/')); ?>">Home</a>
+                        <a href="<?php echo esc_url(home_url('/')); ?>">Strona główna</a>
                         <span class="separator">/</span>
-                        <span class="last">Events</span>
+                        <span class="last">Imprezy i wydarzenia</span>
                     </small>
                 </nav>
-                <h1 class="archive-title">Parties and Events</h1>
+                <h1 class="archive-title">Imprezy i wydarzenia</h1>
             </div>
      
 
@@ -62,7 +62,7 @@ function elm_render_events_list($atts = array()) {
           <button  data-category="all" 
             class="categories_list__item categories_list__item--all scrolled-box__element 
             <?php echo (!is_tax() ? 'categories_list__item--active' : ''); ?>">
-            All events
+            Wszystkie wydarzenia
           </button>
 
           <?php 
@@ -84,17 +84,17 @@ function elm_render_events_list($atts = array()) {
       </div>
 
 
-        <div class="grid js-event-day-filter">
+      
             <!-- calendar -->
 
-            <div id="events-list-mashi-calendar"></div>
+          
             <!-- events list -->
-             <div class="events-list-mashi">
+             <div class="elm-events-list__container">
                 <div class="calendar" data-element="calendar">
                   <div class="calendar__header">
                     <div class="calendar__nav">
                       <a href="#" class="calendar__nav-prev">&lt;</a>
-                      <div class="calendar__nav-current">October 2025</div>
+                      <div class="calendar__nav-current">Październik 2025</div>
                       <a href="#" class="calendar__nav-next">&gt;</a>
                     </div>
                     <div class="calendar__day-names">
@@ -112,15 +112,19 @@ function elm_render_events_list($atts = array()) {
                     <!-- JS will fill day cells here -->
                   </div>
 
-                  <button data-category="all"  class="calendar__button elm-see-all-btn">See all</button>
+                  <button data-category="all"  class="calendar__button elm-see-all-btn">Wszystkie wydarzenia</button>
                 </div>
 
-                <h2 class="all-events-title all-events-title--small all-events-title--border all-events-title--no-mt">List of events</h2>
+                <div class="elm_events-container">
+                       <h2 class="all-events-title all-events-title--small all-events-title--border all-events-title--no-mt">Lista wydarzeń</h2>
                 <div id="events-list"><!-- event list injected here --></div>
+
+                </div>
+           
               </div>
 
    
-        </div>
+        
     </div>
     <?php wp_reset_postdata();
 

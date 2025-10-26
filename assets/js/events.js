@@ -89,7 +89,7 @@ jQuery(document).ready(function ($) {
     $eventsList.empty();
 
     if (!events || events.length === 0) {
-      $eventsList.html("<p class='elm_no_events_msg'>No events found.</p>");
+      $eventsList.html("<p class='elm_no_events_msg'>Nie znaleziono wydarzeń.</p>");
       return;
     }
 
@@ -162,8 +162,8 @@ jQuery(document).ready(function ($) {
           <div class="elm_modal__column elm_modal__column--left">
     
          
-            <p><strong>${formatEventDateTime(ev)}</strong></p>
-          ${ev.location ? `<p>📍 <a class="elm_no-underline" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}" target="_blank" rel="noopener">${ev.location}</a></p>` : ""}
+            <p class="elm_date-location"><strong>${formatEventDateTime(ev)}</strong></p>
+          ${ev.location ? `<p class="elm_date-location">📍 <a class="elm_no-underline" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}" target="_blank" rel="noopener">${ev.location}</a></p>` : ""}
 
             ${ev.description ? `<p>${ev.description}</p>` : ""}
             ${ev.website ? `<p>More info: <a href="${ev.website}" target="_blank">${ev.website}</a></p>` : ""}
@@ -240,7 +240,9 @@ jQuery(document).ready(function ($) {
   function renderCalendarGrid() {
     const year = visibleDate.getFullYear();
     const month = visibleDate.getMonth(); // 0-based
-    $navCurrent.text(visibleDate.toLocaleString(undefined, { month: "long", year: "numeric" }));
+    const monthLabel = visibleDate.toLocaleString("pl-PL", { month: "long", year: "numeric" }).replace(/^\p{Ll}/u, (c) => c.toUpperCase()); // capitalize first letter
+
+    $navCurrent.text(monthLabel);
 
     $daysContainer.empty();
 
