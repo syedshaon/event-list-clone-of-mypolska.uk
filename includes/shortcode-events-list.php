@@ -89,7 +89,35 @@ function elm_render_events_list($atts = array()) {
 
             <div id="events-list-mashi-calendar"></div>
             <!-- events list -->
-             <div id="events-list"></div>
+             <div class="events-list-mashi">
+                <div class="calendar" data-element="calendar">
+                  <div class="calendar__header">
+                    <div class="calendar__nav">
+                      <a href="#" class="calendar__nav-prev">&lt;</a>
+                      <div class="calendar__nav-current">October 2025</div>
+                      <a href="#" class="calendar__nav-next">&gt;</a>
+                    </div>
+                    <div class="calendar__day-names">
+                      <div class="calendar__day-name">PN</div>
+                      <div class="calendar__day-name">WT</div>
+                      <div class="calendar__day-name">WED</div>
+                      <div class="calendar__day-name">CZ</div>
+                      <div class="calendar__day-name">PT</div>
+                      <div class="calendar__day-name">SO</div>
+                      <div class="calendar__day-name">N</div>
+                    </div>
+                  </div>
+
+                  <div class="calendar__days">
+                    <!-- JS will fill day cells here -->
+                  </div>
+
+                  <button data-category="all"  class="calendar__button elm-see-all-btn">See all</button>
+                </div>
+
+                <h2 class="all-events-title all-events-title--small all-events-title--border all-events-title--no-mt">List of events</h2>
+                <div id="events-list"><!-- event list injected here --></div>
+              </div>
 
    
         </div>

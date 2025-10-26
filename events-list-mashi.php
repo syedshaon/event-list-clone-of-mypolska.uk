@@ -237,6 +237,8 @@ add_filter('template_include', 'elm_events_force_plugin_templates', 99);
                 'excerpt'   => get_the_excerpt(),
                 'categories'=> $cats,
                 'link'      => get_permalink(),
+                'image'     => get_the_post_thumbnail_url(get_the_ID(), 'medium'),
+                'description' => get_the_content(),
             ];
         }
     }
