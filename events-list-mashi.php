@@ -202,7 +202,7 @@ add_filter('template_include', 'elm_events_force_plugin_templates', 99);
     $has_detailed_list = has_shortcode($post->post_content, 'events_list');
     $has_homepage_list = has_shortcode($post->post_content, 'elm_homepage_events_list');
 
-    if (!$has_detailed_list && !$has_homepage_list) {
+    if (!$has_detailed_list && !$has_homepage_list && !is_post_type_archive('events')) {
         return; // Exit early if no relevant shortcode
     }
 
@@ -246,7 +246,7 @@ add_filter('template_include', 'elm_events_force_plugin_templates', 99);
     wp_reset_postdata();
 
     // 👉 Detailed events list (calendar page)
-    if ($has_detailed_list) {
+    if ($has_detailed_list || is_post_type_archive('events')) {
         wp_enqueue_script('moment-js', plugin_dir_url(__FILE__) . 'assets/js/moment.js', ['jquery'], null, true);
         wp_enqueue_script('fullcalendar-js', plugin_dir_url(__FILE__) . 'assets/js/fullcalendar.js', ['jquery'], null, true);
         wp_enqueue_style('fullcalendar-css', plugin_dir_url(__FILE__) . 'assets/css/fullcalendar.css');
