@@ -32,7 +32,7 @@ jQuery(document).ready(function ($) {
 
   const allEvents = Array.isArray(elmEventsData.events) ? elmEventsData.events : [];
   const $eventsList = $("#events-list");
-  const $categories = $(".categories_list__item");
+  const $categories = $(".elm_categories_list__item");
   const $seeAllBtn = $(".elm-see-all-btn");
 
   // Container selector (the HTML you showed uses data-element="calendar")
@@ -94,24 +94,28 @@ jQuery(document).ready(function ($) {
     }
 
     events.forEach((ev) => {
-      const cats = (ev.categories || []).map((c) => normalizeCat(c));
-      const lastCat = cats.length ? cats[cats.length - 1] : null;
-      const color = lastCat ? categoryColors[lastCat] : "transparent";
+      const cats = Array.isArray(ev.categories) ? ev.categories.map((c) => normalizeCat(c)) : [];
+      const categoryHTML = cats
+        .map((cat) => {
+          const color = categoryColors[cat] || "#ccc";
+          return `<span class="elm_event_card__category" style="background-color:${color}">${cat}</span>`;
+        })
+        .join(" ");
 
       const dateObj = new Date(ev.date + "T00:00:00");
       const day = String(dateObj.getDate()).padStart(2, "0");
       const month = String(dateObj.getMonth() + 1).padStart(2, "0");
 
       const html = `
-      <div class="elm_event_card">
-        <div class="elm_event_card__header">
-          <div class="elm_event_card__category" style="background-color: ${color}">
-            ${lastCat || ""}
-          </div>
-          <h2 class="elm_event_card__title js-elm-modal-trigger" data-event-id="${ev.id}">
-            ${day}/${month} / ${ev.title}
-          </h2>
-        </div>
+  <div class="elm_event_card">
+    <div class="elm_event_card__header">
+      <div class="elm_event_card__categories">
+        ${categoryHTML}
+      </div>
+      <h2 class="elm_event_card__title js-elm-modal-trigger" data-event-id="${ev.id}">
+        ${day}/${month} / ${ev.title}
+      </h2>
+    </div>
 
         <div class="elm_event_card__image_wrapper">
           <img src="${ev.image}" alt="${ev.title}">
@@ -325,8 +329,8 @@ jQuery(document).ready(function ($) {
 
   // category click handling
   $categories.on("click", function () {
-    $categories.removeClass("categories_list__item--active");
-    $(this).addClass("categories_list__item--active");
+    $categories.removeClass("elm_categories_list__item--active");
+    $(this).addClass("elm_categories_list__item--active");
 
     const raw = $(this).data("category");
     const norm = normalizeCat(raw || "all");

@@ -18,11 +18,11 @@ if (have_posts()) :
         $event_time     = get_post_meta(get_the_ID(), '_elm_event_time', true);
         ?>
         
-        <article id="post-<?php the_ID(); ?>" <?php post_class('single-event'); ?>>
+        <article id="post-<?php the_ID(); ?>" <?php post_class('elm_single-event'); ?>>
             <header class="event-header">
                 <h1 class="event-title"><?php the_title(); ?></h1>
 
-                <div class="event-meta">
+                <div class="elm_event-meta">
                     <?php if ($event_date) : ?>
                         <p><strong>Date:</strong> <?php echo esc_html(date_i18n('F j, Y', strtotime($event_date))); ?></p>
                     <?php endif; ?>
@@ -38,7 +38,7 @@ if (have_posts()) :
             </header>
 
             <?php if (has_post_thumbnail()) : ?>
-                <div class="event-thumbnail">
+                <div class="elm_event-thumbnail">
                     <?php the_post_thumbnail('large'); ?>
                 </div>
             <?php endif; ?>

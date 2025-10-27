@@ -43,7 +43,7 @@ function elm_render_events_list($atts = array()) {
     $query = new WP_Query($args);
     ?>
 
-    <div class="archive-events">
+    <div class="elm_archive-events">
         
             <div class="page-columns__left">
                 <nav aria-label="breadcrumbs" class="rank-math-breadcrumb">
@@ -53,15 +53,15 @@ function elm_render_events_list($atts = array()) {
                         <span class="last">Imprezy i wydarzenia</span>
                     </small>
                 </nav>
-                <h1 class="archive-title">Imprezy i wydarzenia</h1>
+                <h1 class="elm_archive-title">Imprezy i wydarzenia</h1>
             </div>
      
 
             <!-- Categories List -->
-     <div class="categories_list scrolled-box">
+     <div class="elm_categories_list elm_scrolled-box">
           <button  data-category="all" 
-            class="categories_list__item categories_list__item--all scrolled-box__element 
-            <?php echo (!is_tax() ? 'categories_list__item--active' : ''); ?>">
+            class="elm_categories_list__item categories_list__item--all scrolled-box__element 
+            <?php echo (!is_tax() ? 'elm_categories_list__item--active' : ''); ?>">
             Wszystkie wydarzenia
           </button>
 
@@ -72,9 +72,9 @@ function elm_render_events_list($atts = array()) {
           ));
           if (!empty($terms) && !is_wp_error($terms)) :
               foreach ($terms as $term) :
-                  $active_class = (is_tax('category', $term->slug)) ? 'categories_list__item--active' : '';
+                  $active_class = (is_tax('category', $term->slug)) ? 'elm_categories_list__item--active' : '';
                   ?>
-                  <button  data-category="<?php echo esc_html($term->slug); ?>" class="categories_list__item scrolled-box__element <?php echo esc_attr($active_class); ?>"  >
+                  <button  data-category="<?php echo esc_html($term->slug); ?>" class="elm_categories_list__item scrolled-box__element <?php echo esc_attr($active_class); ?>"  >
                       <?php echo esc_html($term->name); ?>
                   </button>
               <?php 
@@ -116,7 +116,7 @@ function elm_render_events_list($atts = array()) {
                 </div>
 
                 <div class="elm_events-container">
-                       <h2 class="all-events-title all-events-title--small all-events-title--border all-events-title--no-mt">Lista wydarzeń</h2>
+                       <h2 class="elm_all-events-title elm_all-events-title--small elm_all-events-title--border elm_all-events-title--no-mt">Lista wydarzeń</h2>
                 <div id="events-list"><!-- event list injected here --></div>
 
                 </div>
