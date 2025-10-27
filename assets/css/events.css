@@ -6,6 +6,13 @@
   padding: 20px;
 }
 
+@media screen and (max-width: 768px) {
+  .elm_single-event,
+  .elm_archive-events {
+    padding: 10px;
+  }
+}
+
 .elm_event-meta {
   margin-bottom: 15px;
 }
@@ -58,9 +65,9 @@
 }
 
 .elm_categories_list .elm_categories_list__item {
-  color: #00519f;
+  color: #000;
   padding: 5px 20px;
-  border: 2px solid #00519f;
+  border: 2px solid #ff3b30;
   font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -73,12 +80,12 @@
 
 .elm_categories_list .elm_categories_list__item:hover {
   color: #fff;
-  background-color: #00519f;
+  background-color: #ff3b30;
 }
 
 .elm_categories_list .elm_categories_list__item--active {
   color: #fff;
-  background-color: #00519f;
+  background-color: #ff3b30;
   /* order: 1; */
 }
 
@@ -216,6 +223,7 @@ h2.elm_all-events-title.elm_all-events-title--border::after {
 @media screen and (max-width: 1000px) {
   .elm-events-list__container .calendar {
     max-width: 100%;
+    padding: 10px;
   }
 }
 
@@ -258,7 +266,7 @@ h2.elm_all-events-title.elm_all-events-title--border::after {
 /* day names */
 .elm-events-list__container .calendar__day-names {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   gap: 10px;
 }
 .elm-events-list__container .calendar__day-name {
@@ -280,6 +288,13 @@ h2.elm_all-events-title.elm_all-events-title--border::after {
   flex-wrap: wrap;
   gap: 10px;
 }
+
+@media screen and (max-width: 600px) {
+  .elm-events-list__container .calendar__days {
+    gap: 5px;
+  }
+}
+
 .elm-events-list__container .calendar__day {
   --day-background: var(--body-background, #f7f7f7);
   font-weight: 500;

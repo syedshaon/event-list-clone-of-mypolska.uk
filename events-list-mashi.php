@@ -170,6 +170,7 @@ add_filter('template_include', 'elm_events_fallback_templates');
 
 // Include shortcode file
 require_once plugin_dir_path(__FILE__) . 'includes/shortcode-events-list.php';
+require_once plugin_dir_path(__FILE__) . 'includes/shortcode-homepage-events-list.php';
 
 
 
@@ -194,22 +195,18 @@ add_filter('template_include', 'elm_events_force_plugin_templates', 99);
 
 // Load plugin CSS only for Events
  function elm_enqueue_event_scripts() {
+    global $post;
+    if (!isset($post)) return;
 
-    // Enqueue FullCalendar and Moment
-    wp_enqueue_script('moment-js', plugin_dir_url(__FILE__) . 'assets/js/moment.js', ['jquery'], null, true);
-    wp_enqueue_script('fullcalendar-js', plugin_dir_url(__FILE__) . 'assets/js/fullcalendar.js', ['jquery'], null, true);
-    wp_enqueue_style('fullcalendar-css', plugin_dir_url(__FILE__) . 'assets/css/fullcalendar.css');
+    // Determine which shortcode is present
+    $has_detailed_list = has_shortcode($post->post_content, 'events_list');
+    $has_homepage_list = has_shortcode($post->post_content, 'elm_homepage_events_list');
 
-    // Enqueue main custom script (this is where filtering + calendar logic will live)
-    wp_enqueue_script(
-        'events-list-mashi-frontend-js',
-        plugin_dir_url(__FILE__) . 'assets/js/events.js',
-        ['jquery', 'moment-js', 'fullcalendar-js'],
-        filemtime(plugin_dir_path(__FILE__) . 'assets/js/events.js'),
-        true
-    );
+    if (!$has_detailed_list && !$has_homepage_list) {
+        return; // Exit early if no relevant shortcode
+    }
 
-    // Enqueue plugin CSS
+    // Common CSS (used by both)
     wp_enqueue_style(
         'elm-events-style',
         plugin_dir_url(__FILE__) . 'assets/css/events.css',
@@ -217,11 +214,15 @@ add_filter('template_include', 'elm_events_force_plugin_templates', 99);
         filemtime(plugin_dir_path(__FILE__) . 'assets/css/events.css')
     );
 
-    // Fetch events for frontend JS
+    // Base event data (shared for both shortcodes)
     $events = [];
     $query = new WP_Query([
         'post_type'      => 'events',
         'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'meta_key'       => '_elm_event_date',
+        'orderby'        => 'meta_value',
+        'order'          => 'ASC',
     ]);
 
     if ($query->have_posts()) {
@@ -229,27 +230,54 @@ add_filter('template_include', 'elm_events_force_plugin_templates', 99);
             $query->the_post();
             $cats = wp_get_post_terms(get_the_ID(), 'category', ['fields' => 'slugs']);
             $events[] = [
-                'id'        => get_the_ID(),
-                'title'     => get_the_title(),
-                'date'      => get_post_meta(get_the_ID(), '_elm_event_date', true),
-                'time'      => get_post_meta(get_the_ID(), '_elm_event_time', true),
-                'location'  => get_post_meta(get_the_ID(), '_elm_event_location', true),
-                'excerpt'   => get_the_excerpt(),
-                'categories'=> $cats,
-                'link'      => get_permalink(),
-                'image'     => get_the_post_thumbnail_url(get_the_ID(), 'medium'),
+                'id'          => get_the_ID(),
+                'title'       => get_the_title(),
+                'date'        => get_post_meta(get_the_ID(), '_elm_event_date', true),
+                'time'        => get_post_meta(get_the_ID(), '_elm_event_time', true),
+                'location'    => get_post_meta(get_the_ID(), '_elm_event_location', true),
+                'excerpt'     => get_the_excerpt(),
+                'categories'  => $cats,
+                'link'        => get_permalink(),
+                'image'       => get_the_post_thumbnail_url(get_the_ID(), 'medium'),
                 'description' => get_the_content(),
             ];
         }
     }
     wp_reset_postdata();
 
-    // Localize events data
-    wp_localize_script('events-list-mashi-frontend-js', 'elmEventsData', [
-        'events' => $events,
-    ]);
+    // 👉 Detailed events list (calendar page)
+    if ($has_detailed_list) {
+        wp_enqueue_script('moment-js', plugin_dir_url(__FILE__) . 'assets/js/moment.js', ['jquery'], null, true);
+        wp_enqueue_script('fullcalendar-js', plugin_dir_url(__FILE__) . 'assets/js/fullcalendar.js', ['jquery'], null, true);
+        wp_enqueue_style('fullcalendar-css', plugin_dir_url(__FILE__) . 'assets/css/fullcalendar.css');
+
+        wp_enqueue_script(
+            'events-list-mashi-frontend-js',
+            plugin_dir_url(__FILE__) . 'assets/js/events.js',
+            ['jquery', 'moment-js', 'fullcalendar-js'],
+            filemtime(plugin_dir_path(__FILE__) . 'assets/js/events.js'),
+            true
+        );
+
+        wp_localize_script('events-list-mashi-frontend-js', 'elmEventsData', ['events' => $events]);
+    }
+
+    // 👉 Minimal homepage event list
+    if ($has_homepage_list) {
+        wp_enqueue_script(
+            'events-homepage-js',
+            plugin_dir_url(__FILE__) . 'assets/js/events-homepage.js',
+            ['jquery'],
+            filemtime(plugin_dir_path(__FILE__) . 'assets/js/events-homepage.js'),
+            true
+        );
+
+        wp_localize_script('events-homepage-js', 'elmEventsData', ['events' => $events]);
+    }
 }
 add_action('wp_enqueue_scripts', 'elm_enqueue_event_scripts');
+
+ 
 
 
 

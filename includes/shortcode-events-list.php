@@ -100,11 +100,11 @@ function elm_render_events_list($atts = array()) {
                     <div class="calendar__day-names">
                       <div class="calendar__day-name">PN</div>
                       <div class="calendar__day-name">WT</div>
-                      <div class="calendar__day-name">WED</div>
+                      <div class="calendar__day-name">SR</div>
                       <div class="calendar__day-name">CZ</div>
                       <div class="calendar__day-name">PT</div>
                       <div class="calendar__day-name">SO</div>
-                      <div class="calendar__day-name">N</div>
+                      <div class="calendar__day-name">NIE</div>
                     </div>
                   </div>
 
