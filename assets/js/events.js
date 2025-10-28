@@ -122,7 +122,7 @@ jQuery(document).ready(function ($) {
         </div>
 
         <div class="elm_event_card__content">
-          ${ev.excerpt ? `<div class="elm_event_card__excerpt">${ev.excerpt}</div>` : ""}
+          ${ev.excerpt ? `<div class="elm_event_card__excerpt">${ev.excerpt.length > 200 ? ev.excerpt.substring(0, 200) + "..." : ev.excerpt}</div>` : ""}
           <div class="elm_event_card__link js-elm-modal-trigger" data-event-id="${ev.id}">
             Details
             <svg width="36" height="6" viewBox="0 0 36 6" fill="none" xmlns="http://www.w3.org/2000/svg">

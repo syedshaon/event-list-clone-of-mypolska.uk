@@ -111,33 +111,7 @@ add_action('save_post', 'elm_save_event_details');
 
 
 
-
-
-/**
- * Admin notice: remind admin to use [events_list] shortcode
- */
-function elm_events_shortcode_admin_notice() {
-    // Only show to admins
-    if (!current_user_can('manage_options')) {
-        return;
-    }
-
-    // Only show on dashboard pages (not on post edit screens)
-    $screen = get_current_screen();
-    if ($screen && $screen->base === 'dashboard') {
-        ?>
-        <div class="notice notice-info is-dismissible">
-            <p><strong>Events List Mashi:</strong>  
-            To display your events on the site, add the shortcode  
-            <code>[events_list]</code> to any page or post.</p>
-        </div>
-        <?php
-    }
-}
-add_action('admin_notices', 'elm_events_shortcode_admin_notice');
-
-
-
+ 
 
 
 
@@ -272,7 +246,10 @@ add_filter('template_include', 'elm_events_force_plugin_templates', 99);
             true
         );
 
-        wp_localize_script('events-homepage-js', 'elmEventsData', ['events' => $events]);
+        wp_localize_script('events-homepage-js', 'elmEventsData', [
+          'events' => $events,
+          'archiveUrl' => get_option('elm_events_archive_url', '#'),
+      ]);
     }
 }
 add_action('wp_enqueue_scripts', 'elm_enqueue_event_scripts');
@@ -285,4 +262,76 @@ add_action('wp_enqueue_scripts', 'elm_enqueue_event_scripts');
 
 
 
- 
+ /**
+ * Add "Settings" submenu under Events
+ */
+function elm_events_add_settings_submenu() {
+    add_submenu_page(
+        'edit.php?post_type=events',      // parent menu slug
+        __('Events Settings', 'events-list-mashi'), // page title
+        __('Settings', 'events-list-mashi'),        // menu title
+        'manage_options',                  // capability
+        'elm-events-settings',             // menu slug
+        'elm_events_settings_page_callback' // callback
+    );
+}
+add_action('admin_menu', 'elm_events_add_settings_submenu');
+
+
+/**
+ * Settings page content
+ */
+function elm_events_settings_page_callback() {
+    // Save settings if submitted
+    if (isset($_POST['elm_events_settings_submit']) && check_admin_referer('elm_events_settings_save', 'elm_events_settings_nonce')) {
+        $archive_url = esc_url_raw($_POST['elm_events_archive_url'] ?? '');
+        update_option('elm_events_archive_url', $archive_url);
+
+        echo '<div class="updated notice is-dismissible"><p><strong>Settings saved successfully.</strong></p></div>';
+    }
+
+    // Get saved URL
+    $archive_url = get_option('elm_events_archive_url', '');
+    ?>
+    <div class="wrap">
+        <h1>Events Settings</h1>
+        <form method="post">
+            <?php wp_nonce_field('elm_events_settings_save', 'elm_events_settings_nonce'); ?>
+
+            <table class="form-table" style="max-width:700px;">
+                <tr>
+                    <th scope="row">
+                        <label for="elm_events_archive_url">Events Archive Page URL</label>
+                    </th>
+                    <td>
+                        <input type="url" id="elm_events_archive_url" name="elm_events_archive_url"
+                               value="<?php echo esc_attr($archive_url); ?>"
+                               class="regular-text" placeholder="https://yourwebsite.com/events">
+                        <p class="description">This URL will be used for the homepage link (“View All Events”).</p>
+                    </td>
+                </tr>
+            </table>
+
+            <?php submit_button('Save Settings', 'primary', 'elm_events_settings_submit'); ?>
+        </form>
+
+        <hr>
+
+        <h2>Shortcodes</h2>
+        <p>Use the following shortcodes to display your events:</p>
+        <ul style="margin-left:20px;">
+            <li><code>[events_list]</code> – Displays the detailed event list (calendar view)</li>
+            <li><code>[elm_homepage_events_list]</code> – Displays the minimal homepage event list</li>
+        </ul>
+
+        <hr>
+
+        <p style="margin-top:30px; font-size:14px; opacity:0.8;">
+            Custom event listing plugin, made with ❤️ by 
+            <a href="https://www.fiverr.com/sellers/syeds9/edit" target="_blank" style="text-decoration:none; color:#2271b1; font-weight:500;">
+                Mashi
+            </a>
+        </p>
+    </div>
+    <?php
+}

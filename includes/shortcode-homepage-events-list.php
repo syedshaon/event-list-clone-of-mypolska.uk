@@ -43,25 +43,21 @@ function elm_render_homepage_events_list($atts = array()) {
     $query = new WP_Query($args);
     ?>
 
-    <div class="elm_homepage_archive-events">
-          
-         
-           
-                
-
-                <div class="elm_homepage_events-container">
-                       <h2 class="elm_homepage_all-events-title">Nadchodzące imprezy i wydarzenia</h2>
-                  <div id="events_homepage_list">
-                  <!-- event list injected here -->
-                  </div>
-
-                </div>
-           
-             
-
-   
-        
+    <div class="elm_events-box">
+      <h2 class="elm_title elm_title--smaller elm_title--uppercase elm_title--blue elm_title--no-mt">
+        Nadchodzące imprezy i wydarzenia
+      </h2>
+      <div class="elm_events-box__list" id="elm_events_homepage_list">
+        <!-- events injected here -->
+      </div>
+      <a href="#" class="elm_events-box__more">
+        Przeglądaj wszystkie
+        <svg width="36" height="6" viewBox="0 0 36 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M36 3L31 0.113249V5.88675L36 3ZM0 3.5H31.5V2.5H0V3.5Z" fill="var(--default-font-color)"></path>
+        </svg>
+      </a>
     </div>
+
     <?php wp_reset_postdata();
 
     return ob_get_clean();
