@@ -312,8 +312,7 @@ h2.elm_all-events-title.elm_all-events-title--border::after {
 
 /* day background override when plugin sets --day-background inline */
 .elm-events-list__container .calendar__day[style*="--day-background"] {
-  background: none !important; /* reset background to let CSS var be used */
-  background-color: #f7f7f7 !important;
+  background-color: var(--day-background) !important; /* reset background to let CSS var be used */
   color: #fff;
 }
 
