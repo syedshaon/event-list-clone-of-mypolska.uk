@@ -47,7 +47,7 @@ function elm_render_homepage_events_list($atts = array()) {
       <h2 class="elm_title elm_title--smaller elm_title--uppercase elm_title--blue elm_title--no-mt">
         Nadchodzące imprezy i wydarzenia
       </h2>
-      <div class="elm_events-box__list" id="elm_events_homepage_list">
+      <div class="elm_events-box__list elm_events_homepage_list" id="elm_events_homepage_list">
         <!-- events injected here -->
       </div>
       <a href="#" class="elm_events-box__more">

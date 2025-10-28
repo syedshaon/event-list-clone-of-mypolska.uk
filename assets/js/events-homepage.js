@@ -2,7 +2,7 @@ jQuery(document).ready(function ($) {
   if (typeof elmEventsData === "undefined") return;
 
   const allEvents = Array.isArray(elmEventsData.events) ? elmEventsData.events : [];
-  const $eventsList = $("#elm_events_homepage_list");
+  const $eventsList = $(".elm_events_homepage_list");
   $(".elm_events-box__more").attr("href", elmEventsData.archiveUrl || "#");
 
   if (!$eventsList.length) return;

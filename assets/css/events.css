@@ -819,6 +819,6 @@ Home Page Events CSS
 
 @media screen and (max-width: 768px) {
   .elm_title {
-    font-size: 2em;
+    font-size: 1rem;
   }
 }
