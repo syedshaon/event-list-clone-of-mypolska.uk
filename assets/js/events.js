@@ -147,53 +147,63 @@ jQuery(document).ready(function ($) {
       const color = lastCat ? categoryColors[lastCat] : "transparent";
 
       // Remove "elm_modal--visible" from HTML template
+      // Inside your modalHTML template (replace the header part)
       const modalHTML = `
-  <div class="elm_modal">
-    <div class="elm_modal__placeholder" role="dialog">
-      <div class="elm_modal__body">
-        <div class="elm_modal__header">
-          <div class="elm_modal__header_inner">
-            <div class="elm_modal__category">
-              <div class="elm_modal__category_name" style="background-color:${color}">${lastCat}</div>
-            </div>
-          <h2 class="elm_modal__title elm_modal__title--decor-left">${ev.title}</h2>
-
+<div class="elm_modal">
+  <div class="elm_modal__placeholder" role="dialog">
+    <div class="elm_modal__body">
+      <div class="elm_modal__header">
+        <div class="elm_modal__header_inner">
+          <div class="elm_modal__category">
+            <div class="elm_modal__category_name" style="background-color:${color}">${lastCat}</div>
           </div>
-          <div class="elm_modal__close" data-element="close">x</div>
+          <h2 class="elm_modal__title elm_modal__title--decor-left">${ev.title}</h2>
+          
+        
+         <div class="elm_modal__actions">
+            <button class="elm_modal__copy_btn" title="Copy URL" data-url="${window.location.origin}/events/${ev.slug}">
+           Copy Event URL
+<svg class="icon icon-copy-outline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" role="img" aria-hidden="true" focusable="false">
+  <title>Copy</title>
+  <rect x="9" y="9" width="9" height="11" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <rect x="4" y="4" width="11" height="11" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+</svg>
+
+
+            </button>
+            
+    <a href="https://www.facebook.com/sharer/sharer.php?u=${window.location.origin}/wp14/events/${ev.slug}"
+       target="_blank" 
+       rel="noopener noreferrer">
+              Share on Facebook
+       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="#1877F2">
+                <path d="M22.675 0H1.325C.593 0 0 .593 0 1.326v21.348C0 23.407.593 24 1.325 24h11.495V14.706h-3.125v-3.625h3.125V8.414c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.794.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.762v2.31h3.587l-.467 3.625h-3.12V24h6.116C23.407 24 24 23.407 24 22.674V1.326C24 .593 23.407 0 22.675 0z"/>
+              </svg>
+    </a>
+
+           
+          </div>
+
+
+        </div>
+        <div class="elm_modal__close" data-element="close">x</div>
+      </div>
+
+      <div class="elm_modal__columns elm_modal__columns--main">
+        <div class="elm_modal__column elm_modal__column--left">
+          <p class="elm_date-location"><strong>${formatEventDateTime(ev)}</strong></p>
+          ${ev.location ? `<p class="elm_date-location">📍 <a class="elm_no-underline" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}" target="_blank" rel="noopener">${ev.location}</a></p>` : ""}
+          ${ev.description ? `<p>${ev.description}</p>` : ""}
+          ${ev.website ? `<p>More info: <a href="${ev.website}" target="_blank">${ev.website}</a></p>` : ""}
         </div>
 
-        <div class="elm_modal__columns elm_modal__columns--main">
-          <div class="elm_modal__column elm_modal__column--left">
-    
-         
-            <p class="elm_date-location"><strong>${formatEventDateTime(ev)}</strong></p>
-          ${ev.location ? `<p class="elm_date-location">📍 <a class="elm_no-underline" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}" target="_blank" rel="noopener">${ev.location}</a></p>` : ""}
-
-            ${ev.description ? `<p>${ev.description}</p>` : ""}
-            ${ev.website ? `<p>More info: <a href="${ev.website}" target="_blank">${ev.website}</a></p>` : ""}
-          </div>
-
-          <div class="elm_modal__column elm_modal__column--right elm_modal__column--gallery">
-            ${
-              ev.images && ev.images.length
-                ? ev.images
-                    .map(
-                      (img) => `
-              <div class="elm_modal__slide">
-             
-                  <img src="${img}" class="elm_modal__image" loading="lazy">
-                
-              </div>
-            `
-                    )
-                    .join("")
-                : `<img src="${ev.image}" class="elm_modal__image" />`
-            }
-          </div>
+        <div class="elm_modal__column elm_modal__column--right elm_modal__column--gallery">
+          ${ev.images && ev.images.length ? ev.images.map((img) => `<div class="elm_modal__slide"><img src="${img}" class="elm_modal__image" loading="lazy"></div>`).join("") : `<img src="${ev.image}" class="elm_modal__image" />`}
         </div>
       </div>
     </div>
   </div>
+</div>
 `;
 
       $("body").append(modalHTML);
@@ -224,6 +234,18 @@ jQuery(document).ready(function ($) {
 
       // Close on overlay click
       $modal.on("click", () => closeModal());
+
+      $modal.find(".elm_modal__copy_btn").on("click", function () {
+        const url = $(this).data("url");
+        navigator.clipboard.writeText(url).then(() => {
+          alert("Event URL copied to clipboard!");
+        });
+      });
+
+      $modal.find(".elm_modal__fb_share_btn").on("click", function () {
+        const url = encodeURIComponent($(this).data("url"));
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank", "width=600,height=400");
+      });
     });
   }
 

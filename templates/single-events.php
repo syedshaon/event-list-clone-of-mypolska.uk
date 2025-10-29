@@ -24,7 +24,7 @@ if (have_posts()) :
 
                 <div class="elm_event-meta">
                     <?php if ($event_date) : ?>
-                        <p><strong>Date:</strong> <?php echo esc_html(date_i18n('F j, Y', strtotime($event_date))); ?></p>
+                        <p><strong>📅 </strong> <?php echo esc_html(date_i18n('F j, Y', strtotime($event_date))); ?></p>
                     <?php endif; ?>
                     
                     <?php if ($event_time) : ?>
@@ -32,7 +32,7 @@ if (have_posts()) :
                     <?php endif; ?>
 
                     <?php if ($event_location) : ?>
-                        <p><strong>Location:</strong> <?php echo esc_html($event_location); ?></p>
+                        <p><strong>📍 </strong> <?php echo esc_html($event_location); ?></p>
                     <?php endif; ?>
                 </div>
             </header>

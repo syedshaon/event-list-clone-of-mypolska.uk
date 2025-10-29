@@ -3,6 +3,10 @@
  * Template for Events Archive
  * This file is loaded by the plugin, not the theme.
  */
+
+if (!defined('ABSPATH')) exit; // Prevent direct access
+
+
 get_header(); ?>
 
 <main id="primary" class="site-main">

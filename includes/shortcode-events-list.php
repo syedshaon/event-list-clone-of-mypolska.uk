@@ -90,29 +90,39 @@ function elm_render_events_list($atts = array()) {
           
             <!-- events list -->
              <div class="elm-events-list__container">
-                <div class="calendar" data-element="calendar">
-                  <div class="calendar__header">
-                    <div class="calendar__nav">
-                      <a href="#" class="calendar__nav-prev">&lt;</a>
-                      <div class="calendar__nav-current">Październik 2025</div>
-                      <a href="#" class="calendar__nav-next">&gt;</a>
+                <div class="calendar-form">
+                  <div class="calendar" data-element="calendar">
+                    <div class="calendar__header">
+                      <div class="calendar__nav">
+                        <a href="#" class="calendar__nav-prev">&lt;</a>
+                        <div class="calendar__nav-current">Październik 2025</div>
+                        <a href="#" class="calendar__nav-next">&gt;</a>
+                      </div>
+                      <div class="calendar__day-names">
+                        <div class="calendar__day-name">PN</div>
+                        <div class="calendar__day-name">WT</div>
+                        <div class="calendar__day-name">SR</div>
+                        <div class="calendar__day-name">CZ</div>
+                        <div class="calendar__day-name">PT</div>
+                        <div class="calendar__day-name">SO</div>
+                        <div class="calendar__day-name">NIE</div>
+                      </div>
                     </div>
-                    <div class="calendar__day-names">
-                      <div class="calendar__day-name">PN</div>
-                      <div class="calendar__day-name">WT</div>
-                      <div class="calendar__day-name">SR</div>
-                      <div class="calendar__day-name">CZ</div>
-                      <div class="calendar__day-name">PT</div>
-                      <div class="calendar__day-name">SO</div>
-                      <div class="calendar__day-name">NIE</div>
+
+                    <div class="calendar__days">
+                      <!-- JS will fill day cells here -->
                     </div>
-                  </div>
 
-                  <div class="calendar__days">
-                    <!-- JS will fill day cells here -->
+                    <button data-category="all"  class="calendar__button elm-see-all-btn">Wszystkie wydarzenia</button>
                   </div>
-
-                  <button data-category="all"  class="calendar__button elm-see-all-btn">Wszystkie wydarzenia</button>
+                  <div class="event-add-form">
+                    <?php
+                    $form_shortcode = get_option('elm_events_form_shortcode', '');
+                    if (!empty($form_shortcode)) {
+                        echo do_shortcode($form_shortcode);
+                    }
+                    ?>
+                </div>
                 </div>
 
                 <div class="elm_events-container">

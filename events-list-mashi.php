@@ -170,17 +170,23 @@ add_filter('template_include', 'elm_events_force_plugin_templates', 99);
 // Load plugin CSS only for Events
  function elm_enqueue_event_scripts() {
     global $post;
+
+    // Prevent issues when $post isn't set
     if (!isset($post)) return;
 
-    // Determine which shortcode is present
+    // Check which shortcodes are used on this page
     $has_detailed_list = has_shortcode($post->post_content, 'events_list');
     $has_homepage_list = has_shortcode($post->post_content, 'elm_homepage_events_list');
 
-    if (!$has_detailed_list && !$has_homepage_list && !is_post_type_archive('events')) {
-        return; // Exit early if no relevant shortcode
+    // ✅ Allow enqueue on single event pages too
+    $is_single_event = is_singular('events');
+    $is_archive = is_post_type_archive('events');
+
+    if (!$has_detailed_list && !$has_homepage_list && !$is_archive && !$is_single_event) {
+        return; // Exit early if this page doesn't need it
     }
 
-    // Common CSS (used by both)
+    // ✅ Common CSS for all event-related pages
     wp_enqueue_style(
         'elm-events-style',
         plugin_dir_url(__FILE__) . 'assets/css/events.css',
@@ -188,7 +194,7 @@ add_filter('template_include', 'elm_events_force_plugin_templates', 99);
         filemtime(plugin_dir_path(__FILE__) . 'assets/css/events.css')
     );
 
-    // Base event data (shared for both shortcodes)
+    // Prepare event data
     $events = [];
     $query = new WP_Query([
         'post_type'      => 'events',
@@ -214,13 +220,14 @@ add_filter('template_include', 'elm_events_force_plugin_templates', 99);
                 'link'        => get_permalink(),
                 'image'       => get_the_post_thumbnail_url(get_the_ID(), 'medium'),
                 'description' => get_the_content(),
+                'slug'        => get_post_field('post_name', get_the_ID()),
             ];
         }
     }
     wp_reset_postdata();
 
-    // 👉 Detailed events list (calendar page)
-    if ($has_detailed_list || is_post_type_archive('events')) {
+    // Calendar / archive view
+    if ($has_detailed_list || $is_archive) {
         wp_enqueue_script('moment-js', plugin_dir_url(__FILE__) . 'assets/js/moment.js', ['jquery'], null, true);
         wp_enqueue_script('fullcalendar-js', plugin_dir_url(__FILE__) . 'assets/js/fullcalendar.js', ['jquery'], null, true);
         wp_enqueue_style('fullcalendar-css', plugin_dir_url(__FILE__) . 'assets/css/fullcalendar.css');
@@ -236,7 +243,7 @@ add_filter('template_include', 'elm_events_force_plugin_templates', 99);
         wp_localize_script('events-list-mashi-frontend-js', 'elmEventsData', ['events' => $events]);
     }
 
-    // 👉 Minimal homepage event list
+    // Homepage shortcode
     if ($has_homepage_list) {
         wp_enqueue_script(
             'events-homepage-js',
@@ -247,12 +254,14 @@ add_filter('template_include', 'elm_events_force_plugin_templates', 99);
         );
 
         wp_localize_script('events-homepage-js', 'elmEventsData', [
-          'events' => $events,
-          'archiveUrl' => get_option('elm_events_archive_url', '#'),
-      ]);
+            'events' => $events,
+            'archiveUrl' => get_option('elm_events_archive_url', '#'),
+        ]);
     }
 }
 add_action('wp_enqueue_scripts', 'elm_enqueue_event_scripts');
+
+ 
 
  
 
@@ -281,17 +290,22 @@ add_action('admin_menu', 'elm_events_add_settings_submenu');
 /**
  * Settings page content
  */
-function elm_events_settings_page_callback() {
+ function elm_events_settings_page_callback() {
     // Save settings if submitted
-    if (isset($_POST['elm_events_settings_submit']) && check_admin_referer('elm_events_settings_save', 'elm_events_settings_nonce')) {
-        $archive_url = esc_url_raw($_POST['elm_events_archive_url'] ?? '');
-        update_option('elm_events_archive_url', $archive_url);
+  if (isset($_POST['elm_events_settings_submit']) && check_admin_referer('elm_events_settings_save', 'elm_events_settings_nonce')) {
+    $archive_url = esc_url_raw($_POST['elm_events_archive_url'] ?? '');
+    $form_shortcode = isset($_POST['elm_events_form_shortcode']) ? stripslashes($_POST['elm_events_form_shortcode']) : '';
 
-        echo '<div class="updated notice is-dismissible"><p><strong>Settings saved successfully.</strong></p></div>';
-    }
+    update_option('elm_events_archive_url', $archive_url);
+    update_option('elm_events_form_shortcode', $form_shortcode);
 
-    // Get saved URL
+    echo '<div class="updated notice is-dismissible"><p><strong>Settings saved successfully.</strong></p></div>';
+}
+
+
+    // Get saved values
     $archive_url = get_option('elm_events_archive_url', '');
+    $form_shortcode = get_option('elm_events_form_shortcode', '');
     ?>
     <div class="wrap">
         <h1>Events Settings</h1>
@@ -307,7 +321,19 @@ function elm_events_settings_page_callback() {
                         <input type="url" id="elm_events_archive_url" name="elm_events_archive_url"
                                value="<?php echo esc_attr($archive_url); ?>"
                                class="regular-text" placeholder="https://yourwebsite.com/events">
-                        <p class="description">This URL will be used for the homepage link (“View All Events”).</p>
+                        <p class="description">Used for the homepage “View All Events” link.</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th scope="row">
+                        <label for="elm_events_form_shortcode">Event Form Shortcode</label>
+                    </th>
+                    <td>
+                        <input type="text" id="elm_events_form_shortcode" name="elm_events_form_shortcode"
+                               value="<?php echo esc_attr($form_shortcode); ?>"
+                               class="regular-text" placeholder='[metform id="123"]'>
+                        <p class="description">Enter your Metform or other form shortcode here. It will appear under the calendar.</p>
                     </td>
                 </tr>
             </table>
@@ -318,14 +344,12 @@ function elm_events_settings_page_callback() {
         <hr>
 
         <h2>Shortcodes</h2>
-        <p>Use the following shortcodes to display your events:</p>
         <ul style="margin-left:20px;">
             <li><code>[events_list]</code> – Displays the detailed event list (calendar view)</li>
             <li><code>[elm_homepage_events_list]</code> – Displays the minimal homepage event list</li>
         </ul>
 
         <hr>
-
         <p style="margin-top:30px; font-size:14px; opacity:0.8;">
             Custom event listing plugin, made with ❤️ by 
             <a href="https://www.fiverr.com/sellers/syeds9/edit" target="_blank" style="text-decoration:none; color:#2271b1; font-weight:500;">
