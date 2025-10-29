@@ -31,8 +31,36 @@ jQuery(document).ready(function ($) {
   if (typeof elmEventsData === "undefined") return;
 
   const allEvents = Array.isArray(elmEventsData.events) ? elmEventsData.events : [];
+  // 🔹 Filter category list to only show ones that have at least one event
+  const eventCategoryCounts = {};
+
+  allEvents.forEach((ev) => {
+    if (Array.isArray(ev.categories)) {
+      ev.categories.forEach((cat) => {
+        const key = String(cat).toLowerCase();
+        eventCategoryCounts[key] = (eventCategoryCounts[key] || 0) + 1;
+      });
+    }
+  });
+
+  // 🔹 Keep only categories that appear in events (and limit to 12)
+  $(".elm_categories_list__item").each(function () {
+    const raw = $(this).data("category");
+    const key = String(raw || "").toLowerCase();
+
+    if (!eventCategoryCounts[key]) {
+      $(this).remove(); // hide categories without events
+    }
+  });
+
+  // 🔹 After filtering, keep only first 12 visible categories
+  $(".elm_categories_list__item").slice(12).remove();
+
+  // Reassign variable (because we changed the DOM)
+  let $categories = $(".elm_categories_list__item");
+
   const $eventsList = $("#events-list");
-  const $categories = $(".elm_categories_list__item");
+
   const $seeAllBtn = $(".elm-see-all-btn");
 
   // Container selector (the HTML you showed uses data-element="calendar")
