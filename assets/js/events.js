@@ -200,7 +200,7 @@ jQuery(document).ready(function ($) {
 
             </button>
             
-    <a href="https://www.facebook.com/sharer/sharer.php?u=${window.location.origin}/wp14/events/${ev.slug}"
+    <a href="https://www.facebook.com/sharer/sharer.php?u=${window.location.origin}/events/${ev.slug}"
        target="_blank" 
        rel="noopener noreferrer">
               Share on Facebook
